@@ -96,7 +96,7 @@ main { padding:0 0 100px; }
 .cal-col-hdr.today-col .ch-d { color:var(--accent); }
 /* Scrollable body */
 .cal-scroll {
-  overflow-x:auto; overflow-y:auto; max-height:400px;
+  overflow-x:auto; overflow-y:hidden;
   scrollbar-width:thin; scrollbar-color:var(--border) transparent;
 }
 .cal-scroll::-webkit-scrollbar { width:3px; height:3px; }
@@ -120,11 +120,12 @@ main { padding:0 0 100px; }
 /* Calendar event block */
 .cal-ev {
   position:absolute; left:2px; right:2px; border-radius:5px; padding:3px 5px;
-  font-size:9px; font-weight:600; overflow:hidden; cursor:pointer; z-index:5;
+  font-size:9px; font-weight:600; overflow:visible; cursor:pointer; z-index:5;
   display:flex; flex-direction:column; gap:1px; line-height:1.3; transition:filter .15s;
+  min-height:18px;
 }
 .cal-ev:active { filter:brightness(.88); }
-.ev-n { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.ev-n { white-space:normal; word-break:break-word; line-height:1.2; }
 .ev-t { opacity:.75; font-size:8px; font-family:var(--mono); font-weight:400; }
 
 /* ── DAY VIEW ────────────────────── */
@@ -170,7 +171,7 @@ main { padding:0 0 100px; }
   line-height:1.3; transition:filter .15s;
 }
 .dv-ev:active { filter:brightness(.88); }
-.dv-ev .ev-n { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.dv-ev .ev-n { white-space:normal; word-break:break-word; line-height:1.2; }
 .dv-ev .ev-t { opacity:.75; font-size:9px; font-family:var(--mono); font-weight:400; }
 
 /* ── CLASSES LIST ─────────────────── */
@@ -401,7 +402,7 @@ select:focus { border-color:var(--accent); }
 const DAYS      = ['Lun','Mar','Mié','Jue','Vie'];
 const DAYS_FULL = ['Lunes','Martes','Miércoles','Jueves','Viernes'];
 const H0 = 7, H1 = 22;
-const ROW_H  = 52;   /* px / hour — weekly */
+const ROW_H  = 26;   /* px / hour — weekly (15 h × 26 = 390 px, fits without scroll) */
 const SLOT_W = 60;   /* px / 30-min — day view */
 const DV_H   = 86;   /* px — day-view row height */
 
@@ -536,10 +537,7 @@ function renderCalendar() {
     });
   });
 
-  /* auto-scroll to current time */
-  const nm=new Date().getHours()*60+new Date().getMinutes();
-  const sc=document.getElementById('cal-scroll');
-  if(nm>=H0*60&&nm<=H1*60) setTimeout(()=>{ sc.scrollTop=Math.max(0,m2py(nm)-100); },60);
+  /* no vertical scroll needed — all hours visible */
 }
 
 /* ── DAY VIEW ── */
