@@ -743,7 +743,8 @@ function timeOpts(sel='08:00') {
 function parseGrade(val) {
   if (val==='' || val===null || val===undefined) return null;
   const n = parseFloat(String(val).replace(',','.'));
-  return isNaN(n) ? null : Math.min(10, Math.max(0, n));
+  if (isNaN(n) || n === 0) return null;
+  return Math.min(10, Math.max(0, n));
 }
 
 function calcStatus(p1raw, p2raw) {
@@ -807,8 +808,8 @@ function renderNotas() {
       const passLine  = sug.minPass  <= 10 ? `≥${sug.minPass} aprob.`  : '';
       const promoLine = sug.minPromo <= 10 ? `≥${sug.minPromo} prom.` : 'Ya prom.';
       p2CellHtml = `<td class="td-sugg">
-        <input type="number" min="0" max="10" step="0.5" value="${p2}"
-               data-id="${cls.id}" data-field="p2" placeholder="—" inputmode="decimal">
+        <input type="number" min="0" max="10" step="0.5" value="${p2 === '0' ? '' : p2}"
+               data-id="${cls.id}" data-field="p2" placeholder="${p2 === '0' ? '?' : '—'}" inputmode="decimal">
         <div class="sugg-text">
           ${passLine  ? `<span>${passLine}</span>`  : ''}
           ${promoLine ? `<span>${promoLine}</span>` : ''}
@@ -816,8 +817,8 @@ function renderNotas() {
       </td>`;
     } else {
       p2CellHtml = `<td class="td-grade">
-        <input type="number" min="0" max="10" step="0.5" value="${p2}"
-               data-id="${cls.id}" data-field="p2" placeholder="—" inputmode="decimal">
+        <input type="number" min="0" max="10" step="0.5" value="${p2 === '0' ? '' : p2}"
+               data-id="${cls.id}" data-field="p2" placeholder="${p2 === '0' ? '?' : '—'}" inputmode="decimal">
       </td>`;
     }
 
@@ -827,22 +828,22 @@ function renderNotas() {
       finalCellHtml = `<td class="td-final-disabled">—</td>`;
     } else {
       finalCellHtml = `<td class="td-grade">
-        <input type="number" min="0" max="10" step="0.5" value="${fin}"
-               data-id="${cls.id}" data-field="final" placeholder="—" inputmode="decimal">
+        <input type="number" min="0" max="10" step="0.5" value="${fin === '0' ? '' : fin}"
+               data-id="${cls.id}" data-field="final" placeholder="${fin === '0' ? '?' : '—'}" inputmode="decimal">
       </td>`;
     }
 
-    /* Row highlight based on final grade (only when approved + final entered) */
+    /* Row highlight based on final grade */
     let rowClass = '';
-    if (status && status.type === 'pass' && parseGrade(fin) !== null) {
+    if (parseGrade(fin) !== null) {
       rowClass = parseGrade(fin) >= 4 ? ' row-final-pass' : ' row-final-fail';
     }
 
     tableRows += `<tr class="${rowClass}">
       <td class="td-name"><span class="cls-dot" style="background:${cls.color}"></span>${cls.name}</td>
       <td class="td-grade">
-        <input type="number" min="0" max="10" step="0.5" value="${p1}"
-               data-id="${cls.id}" data-field="p1" placeholder="—" inputmode="decimal">
+        <input type="number" min="0" max="10" step="0.5" value="${p1 === '0' ? '' : p1}"
+               data-id="${cls.id}" data-field="p1" placeholder="${p1 === '0' ? '?' : '—'}" inputmode="decimal">
       </td>
       ${p2CellHtml}
       ${finalCellHtml}
